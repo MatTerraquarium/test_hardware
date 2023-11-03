@@ -26,43 +26,53 @@ int main(void)
 	struct sensor_value temperature;
 	struct sensor_value humidity;
 
+	// VERIFY IF THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER IS READY
 	ret = gpio_is_ready_dt(&level_shifter);
 	if (ret == 0) {
 		printk("Error: level_shifter is not ready\n");
 		return 0;
 	}
+	// CONFIGURE THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER AS A GPIO OUT 
+  	// AND SET IT TO ACTIVE STATE
 	ret = gpio_pin_configure_dt(&level_shifter, GPIO_OUTPUT_ACTIVE);
 	if (ret != 0) {
 		printk("Error %d: failed to configure level shifter\n", ret);
 		return 0;
 	}
-	ret = gpio_pin_set_dt(&level_shifter, 1);
+  	// SET THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER TO LOGIC LEVEL '1'
+  	// (FOR DEBUG PURPOSES)
+  	ret = gpio_pin_set_dt(&level_shifter, 1);
 	if (ret != 0) {
 		printk("Error %d: failed to set level shifter at logic level 1\n", ret);
 		return 0;
 	}
 
+	// VERIFY IF THE SERVO DEVICE IS READY
 	ret = device_is_ready(servo.dev);
 	if (ret == 0) {
 		printk("Error: PWM device %s is not ready\n", servo.dev->name);
 		return 0;
 	}
+	// SET THE SERVO PULSE PARAMETER ACCORDINGLY TO THE OVERLAY DEFINITION
 	ret = pwm_set_pulse_dt(&servo, pulse_width);
 	if (ret != 0) {
 		printk("Error %d: failed to set pulse width\n", ret);
 		return 0;
 	}
 
+	// VERIFY IF THE DHT11 SENSOR DEVICE IS READY
 	ret = device_is_ready(dht11);
 	if (ret == 0) {
 		printk("Device %s is not ready\n", dht11->name);
 		return 0;
 	}
+	// DO A FETCH OF THE DHT11 SENSOR DEVICE
 	ret = sensor_sample_fetch(dht11);
 	if (ret != 0) {
 		printk("Sensor fetch failed: %d\n", ret);
 		return 0;
 	}
+	// GET THE TEMP AND HUMIDITY VALUES OBTAINED FROM THE FETCH
 	ret = sensor_channel_get(dht11, SENSOR_CHAN_AMBIENT_TEMP, &temperature);
 	if (ret == 0) {
 		ret = sensor_channel_get(dht11, SENSOR_CHAN_HUMIDITY, &humidity);
@@ -71,7 +81,7 @@ int main(void)
 		printk("get failed: %d\n", ret);
 		return 0;
 	}
-
+	// PRINT THE READ TEMP AND HUMIDITY VALUES
 	printk("temp: %d\n%d\n", temperature.val1, temperature.val2);
 	printk("hum: %d\n%d\n", humidity.val1, humidity.val2);
 
