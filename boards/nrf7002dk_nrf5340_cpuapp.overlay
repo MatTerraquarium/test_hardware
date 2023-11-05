@@ -21,9 +21,16 @@
 
 	aliases {
 		pwm-led1 = &pwm_led1;
-		level-shifter = &level_shifter0;
-		servo = &servo0;
+		level-shifter0 = &level_shifter0;
+		level-shifter1 = &level_shifter1;
+		level-shifter2 = &level_shifter2;
+		relay1 = &relay_1;
+		relay2 = &relay_2;
+		relay3 = &relay_3;
+		relay4 = &relay_4;
 		dht11 = &dht110;
+		dht22 = &dht220;
+		servo = &servo0;
 	};
 
 	/*
@@ -42,22 +49,63 @@
 		compatible = "gpio-leds";
 		level_shifter0: level_shifter_0 {
 			status = "okay";
-			gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
-			label = "Level Shifter - Output Enable";
+			gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+			label = "Level Shifter Sensors - Output Enable";
 		};
-	};
-
- 	servo0: servo_0 {
-		compatible = "pwm-servo";
-		pwms = <&pwm1 0 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-		min-pulse = <PWM_USEC(700)>;
-		max-pulse = <PWM_USEC(2500)>;
+		level_shifter1: level_shifter_1 {
+			status = "okay";
+			gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
+			label = "Level Shifter Relays - Output Enable";
+		};
+		level_shifter2: level_shifter_2 {
+			status = "okay";
+			gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+			label = "Level Shifter Feeder - Output Enable";
+		};
 	};
 
 	dht110: dht11_0 {
 		compatible = "aosong,dht";
 		status = "okay";
-		dio-gpios = <&gpio1 11 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+		dio-gpios = <&gpio0 26 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+	};
+
+	dht220: dht22_0 {
+		compatible = "aosong,dht";
+		status = "okay";
+		dio-gpios = <&gpio0 25 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+		dht22;
+	};
+
+	relays {
+        compatible = "gpio-leds";
+        relay_1: relay_01 {
+            status = "okay";
+            gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+            label = "Ralay 1";
+        };
+        relay_2: relay_02 {
+            status = "okay";
+            gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+            label = "Ralay 2";
+        };
+        relay_3: relay_03 {
+            status = "okay";
+            gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
+            label = "Ralay 3";
+        };
+        relay_4: relay_04 {
+            status = "okay";
+            gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+            label = "Ralay 4";
+        };
+	};
+
+	servo0: servo_0 {
+		compatible = "pwm-servo";
+		pwms = <&pwm1 0 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
+		min-pulse = <PWM_USEC(1000)>;
+		max-pulse = <PWM_USEC(2000)>;
 	};
 };
 
@@ -91,13 +139,13 @@
 
 	pwm1_default_alt: pwm1_default_alt {
 		group1 {
-			psels = <NRF_PSEL(PWM_OUT0, 1, 12)>;
+			psels = <NRF_PSEL(PWM_OUT0, 1, 2)>;
 		};
 	};
 
 	pwm1_sleep_alt: pwm1_sleep_alt {
 		group1 {
-			psels = <NRF_PSEL(PWM_OUT0, 1, 12)>;
+			psels = <NRF_PSEL(PWM_OUT0, 1, 2)>;
 			low-power-enable;
 		};
 	};
