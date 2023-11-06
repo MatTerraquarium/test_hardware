@@ -7,6 +7,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/device.h>
+#include <zephyr/devicetree.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/sensor.h>
@@ -23,6 +24,7 @@ static const struct gpio_dt_spec relay4 = GPIO_DT_SPEC_GET(DT_ALIAS(relay4), gpi
 
 static const struct device *const dht11 = DEVICE_DT_GET(DT_ALIAS(dht11));
 static const struct device *const dht22 = DEVICE_DT_GET(DT_ALIAS(dht22));
+static const struct device *const ds18b20 = DEVICE_DT_GET(DT_ALIAS(ds18b20));
 
 static const struct pwm_dt_spec servo = PWM_DT_SPEC_GET(DT_ALIAS(servo));
 static const uint32_t min_pulse = DT_PROP(DT_ALIAS(servo), min_pulse);
@@ -35,6 +37,8 @@ int main(void)
 	struct sensor_value dht11_humidity;
 	struct sensor_value dht22_temperature;
 	struct sensor_value dht22_humidity;
+	struct sensor_value ds18b20_temperature;
+
 	uint32_t pulse_width = (uint32_t)((max_pulse + min_pulse) / 2);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -259,7 +263,7 @@ int main(void)
 		printk("Device %s is not ready\n", dht22->name);
 		return 0;
 	}
-	// DO A FETCH OF THE DHT11 SENSOR DEVICE
+	// DO A FETCH OF THE DHT22 SENSOR DEVICE
 	ret = sensor_sample_fetch(dht22);
 	if (ret != 0) {
 		printk("Sensor %s fetch failed: %d\n",dht22->name, ret);
@@ -277,6 +281,28 @@ int main(void)
 		// PRINT THE READ TEMP AND HUMIDITY VALUES
 		printk("temp: %d\n%d\n", dht22_temperature.val1, dht22_temperature.val2);
 		printk("hum: %d\n%d\n", dht22_humidity.val1, dht22_humidity.val2);
+	}
+
+	// VERIFY IF THE DS18B20 SENSOR DEVICE IS READY
+	ret = device_is_ready(ds18b20);
+	if (ret == 0) {
+		printk("Device %s is not ready\n", ds18b20->name);
+		return 0;
+	}
+	// DO A FETCH OF THE DS18B20 SENSOR DEVICE
+	ret = sensor_sample_fetch(ds18b20);
+	if (ret != 0) {
+		printk("Sensor %s fetch failed: %d\n",ds18b20->name, ret);
+		//return 0;
+	} else {
+		// GET THE TEMP VALUE OBTAINED FROM THE FETCH
+		ret = sensor_channel_get(ds18b20, SENSOR_CHAN_AMBIENT_TEMP, &ds18b20_temperature);
+		if (ret != 0) {
+			printk("get failed: %d\n", ret);
+			return 0;
+		}
+		// PRINT THE READ TEMP VALUES
+		printk("temp: %d\n%d\n", ds18b20_temperature.val1, ds18b20_temperature.val2);
 	}
 
 

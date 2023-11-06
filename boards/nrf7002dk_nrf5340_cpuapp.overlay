@@ -30,6 +30,7 @@
 		relay4 = &relay_4;
 		dht11 = &dht110;
 		dht22 = &dht220;
+		ds18b20 = &ds18b200;
 		servo = &servo0;
 	};
 
@@ -49,7 +50,7 @@
 		compatible = "gpio-leds";
 		level_shifter0: level_shifter_0 {
 			status = "okay";
-			gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
 			label = "Level Shifter Sensors - Output Enable";
 		};
 		level_shifter1: level_shifter_1 {
@@ -122,7 +123,47 @@
 	pinctrl-names = "default", "sleep";
 };
 
+&uart1 {
+    status = "okay";
+    current-speed = <115200>;
+    pinctrl-0 = <&uart1_default>;
+    pinctrl-1 = <&uart1_sleep>;
+    pinctrl-names = "default", "sleep";
+    w1_0: w1-zephyr-serial-0 {
+        compatible = "zephyr,w1-serial";
+        status = "okay";
+		ds18b200: ds18b20_0 {
+			compatible = "maxim,ds18b20";
+			family-code = <0x28>;
+			resolution = <12>;
+			status = "okay";
+		};
+    };
+};
+
 &pinctrl {
+	uart1_default: uart1_default {
+        group1 {
+            psels = <NRF_PSEL(UART_RX, 0, 6)>;
+            bias-pull-up;
+        };
+        group2 {
+            psels = <NRF_PSEL(UART_TX, 0, 7)>;
+            nordic,drive-mode = <NRF_DRIVE_H0D1>;
+        };
+    };
+
+	uart1_sleep: uart1_sleep {
+        group1 {
+            psels = <NRF_PSEL(UART_RX, 0, 6)>;
+            low-power-enable;
+        };
+		group2 {
+            psels = <NRF_PSEL(UART_TX, 0, 7)>;
+            low-power-enable;
+        };
+    };
+
 	pwm0_default_alt: pwm0_default_alt {
 		group1 {
 			psels = <NRF_PSEL(PWM_OUT1, 1, 7)>;
