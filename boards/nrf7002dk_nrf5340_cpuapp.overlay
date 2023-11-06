@@ -21,9 +21,9 @@
 
 	aliases {
 		pwm-led1 = &pwm_led1;
-		level-shifter0 = &level_shifter0;
 		level-shifter1 = &level_shifter1;
 		level-shifter2 = &level_shifter2;
+		level-shifter3 = &level_shifter3;
 		relay1 = &relay_1;
 		relay2 = &relay_2;
 		relay3 = &relay_3;
@@ -48,19 +48,19 @@
 
 	level_shifters {
 		compatible = "gpio-leds";
-		level_shifter0: level_shifter_0 {
+		level_shifter1: level_shifter_1 {
 			status = "okay";
 			gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
 			label = "Level Shifter Sensors - Output Enable";
 		};
-		level_shifter1: level_shifter_1 {
-			status = "okay";
-			gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
-			label = "Level Shifter Relays - Output Enable";
-		};
 		level_shifter2: level_shifter_2 {
 			status = "okay";
-			gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
+			label = "Level Shifter Relays - Output Enable";
+		};
+		level_shifter3: level_shifter_3 {
+			status = "okay";
+			gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
 			label = "Level Shifter Feeder - Output Enable";
 		};
 	};
@@ -82,22 +82,22 @@
         compatible = "gpio-leds";
         relay_1: relay_01 {
             status = "okay";
-            gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
             label = "Ralay 1";
         };
         relay_2: relay_02 {
             status = "okay";
-            gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
             label = "Ralay 2";
         };
         relay_3: relay_03 {
             status = "okay";
-            gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
             label = "Ralay 3";
         };
         relay_4: relay_04 {
             status = "okay";
-            gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
             label = "Ralay 4";
         };
 	};
@@ -158,13 +158,13 @@
 
 	pwm1_default_alt: pwm1_default_alt {
 		group1 {
-			psels = <NRF_PSEL(PWM_OUT0, 1, 2)>;
+			psels = <NRF_PSEL(PWM_OUT0, 0, 27)>;
 		};
 	};
 
 	pwm1_sleep_alt: pwm1_sleep_alt {
 		group1 {
-			psels = <NRF_PSEL(PWM_OUT0, 1, 2)>;
+			psels = <NRF_PSEL(PWM_OUT0, 0, 27)>;
 			low-power-enable;
 		};
 	};

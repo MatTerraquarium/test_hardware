@@ -13,9 +13,9 @@
 #include <zephyr/drivers/sensor.h>
 #include <stdio.h>
 
-static const struct gpio_dt_spec level_shifter0 = GPIO_DT_SPEC_GET(DT_ALIAS(level_shifter0), gpios);
 static const struct gpio_dt_spec level_shifter1 = GPIO_DT_SPEC_GET(DT_ALIAS(level_shifter1), gpios);
 static const struct gpio_dt_spec level_shifter2 = GPIO_DT_SPEC_GET(DT_ALIAS(level_shifter2), gpios);
+static const struct gpio_dt_spec level_shifter3 = GPIO_DT_SPEC_GET(DT_ALIAS(level_shifter3), gpios);
 
 static const struct gpio_dt_spec relay1 = GPIO_DT_SPEC_GET(DT_ALIAS(relay1), gpios);
 static const struct gpio_dt_spec relay2 = GPIO_DT_SPEC_GET(DT_ALIAS(relay2), gpios);
@@ -42,27 +42,6 @@ int main(void)
 	uint32_t pulse_width = (uint32_t)((max_pulse + min_pulse) / 2);
 
     ///////////////////////////////////////////////////////////////////////////
-	// VERIFY IF THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER IS READY
-	ret = gpio_is_ready_dt(&level_shifter0);
-	if (ret == 0) {
-		printk("Error: level_shifter0 is not ready\n");
-		return 0;
-	}
-	// CONFIGURE THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER AS A GPIO OUT 
-  	// AND SET IT TO ACTIVE STATE
-	ret = gpio_pin_configure_dt(&level_shifter0, GPIO_OUTPUT_ACTIVE);
-	if (ret != 0) {
-		printk("Error %d: failed to configure level shifter 0\n", ret);
-		return 0;
-	}
-  	// SET THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER TO LOGIC LEVEL '1'
-  	// (FOR DEBUG PURPOSES)
-  	ret = gpio_pin_set_dt(&level_shifter0, 1);
-	if (ret != 0) {
-		printk("Error %d: failed to set level shifter 0 at logic level 1\n", ret);
-		return 0;
-	}
-
 	// VERIFY IF THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER IS READY
 	ret = gpio_is_ready_dt(&level_shifter1);
 	if (ret == 0) {
@@ -102,6 +81,27 @@ int main(void)
   	ret = gpio_pin_set_dt(&level_shifter2, 1);
 	if (ret != 0) {
 		printk("Error %d: failed to set level shifter 2 at logic level 1\n", ret);
+		return 0;
+	}
+
+	// VERIFY IF THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER IS READY
+	ret = gpio_is_ready_dt(&level_shifter3);
+	if (ret == 0) {
+		printk("Error: level_shifter3 is not ready\n");
+		return 0;
+	}
+	// CONFIGURE THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER AS A GPIO OUT 
+  	// AND SET IT TO ACTIVE STATE
+	ret = gpio_pin_configure_dt(&level_shifter3, GPIO_OUTPUT_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure level shifter 3\n", ret);
+		return 0;
+	}
+  	// SET THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER TO LOGIC LEVEL '1'
+  	// (FOR DEBUG PURPOSES)
+  	ret = gpio_pin_set_dt(&level_shifter3, 1);
+	if (ret != 0) {
+		printk("Error %d: failed to set level shifter 3 at logic level 1\n", ret);
 		return 0;
 	}
 
