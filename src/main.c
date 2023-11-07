@@ -14,8 +14,6 @@
 #include <stdio.h>
 
 static const struct gpio_dt_spec level_shifter1 = GPIO_DT_SPEC_GET(DT_ALIAS(level_shifter1), gpios);
-static const struct gpio_dt_spec level_shifter2 = GPIO_DT_SPEC_GET(DT_ALIAS(level_shifter2), gpios);
-static const struct gpio_dt_spec level_shifter3 = GPIO_DT_SPEC_GET(DT_ALIAS(level_shifter3), gpios);
 
 static const struct gpio_dt_spec relay1 = GPIO_DT_SPEC_GET(DT_ALIAS(relay1), gpios);
 static const struct gpio_dt_spec relay2 = GPIO_DT_SPEC_GET(DT_ALIAS(relay2), gpios);
@@ -30,6 +28,8 @@ static const struct pwm_dt_spec servo = PWM_DT_SPEC_GET(DT_ALIAS(servo));
 static const uint32_t min_pulse = DT_PROP(DT_ALIAS(servo), min_pulse);
 static const uint32_t max_pulse = DT_PROP(DT_ALIAS(servo), max_pulse);
 
+volatile uint32_t pulse_width;
+
 int main(void)
 {
 	int ret;
@@ -39,7 +39,8 @@ int main(void)
 	struct sensor_value dht22_humidity;
 	struct sensor_value ds18b20_temperature;
 
-	uint32_t pulse_width = (uint32_t)((max_pulse + min_pulse) / 2);
+	pulse_width = (uint32_t)((max_pulse + min_pulse) / 2);
+	printk("Pulse Width: %d\n", pulse_width);
 
     ///////////////////////////////////////////////////////////////////////////
 	// VERIFY IF THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER IS READY
@@ -60,48 +61,6 @@ int main(void)
   	ret = gpio_pin_set_dt(&level_shifter1, 1);
 	if (ret != 0) {
 		printk("Error %d: failed to set level shifter 1 at logic level 1\n", ret);
-		return 0;
-	}
-
-	// VERIFY IF THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER IS READY
-	ret = gpio_is_ready_dt(&level_shifter2);
-	if (ret == 0) {
-		printk("Error: level_shifter2 is not ready\n");
-		return 0;
-	}
-	// CONFIGURE THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER AS A GPIO OUT 
-  	// AND SET IT TO ACTIVE STATE
-	ret = gpio_pin_configure_dt(&level_shifter2, GPIO_OUTPUT_ACTIVE);
-	if (ret != 0) {
-		printk("Error %d: failed to configure level shifter 2\n", ret);
-		return 0;
-	}
-  	// SET THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER TO LOGIC LEVEL '1'
-  	// (FOR DEBUG PURPOSES)
-  	ret = gpio_pin_set_dt(&level_shifter2, 1);
-	if (ret != 0) {
-		printk("Error %d: failed to set level shifter 2 at logic level 1\n", ret);
-		return 0;
-	}
-
-	// VERIFY IF THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER IS READY
-	ret = gpio_is_ready_dt(&level_shifter3);
-	if (ret == 0) {
-		printk("Error: level_shifter3 is not ready\n");
-		return 0;
-	}
-	// CONFIGURE THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER AS A GPIO OUT 
-  	// AND SET IT TO ACTIVE STATE
-	ret = gpio_pin_configure_dt(&level_shifter3, GPIO_OUTPUT_ACTIVE);
-	if (ret != 0) {
-		printk("Error %d: failed to configure level shifter 3\n", ret);
-		return 0;
-	}
-  	// SET THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER TO LOGIC LEVEL '1'
-  	// (FOR DEBUG PURPOSES)
-  	ret = gpio_pin_set_dt(&level_shifter3, 1);
-	if (ret != 0) {
-		printk("Error %d: failed to set level shifter 3 at logic level 1\n", ret);
 		return 0;
 	}
 
@@ -230,12 +189,13 @@ int main(void)
 
 
     ///////////////////////////////////////////////////////////////////////////
-		// VERIFY IF THE DHT11 SENSOR DEVICE IS READY
+	// VERIFY IF THE DHT11 SENSOR DEVICE IS READY
 	ret = device_is_ready(dht11);
 	if (ret == 0) {
 		printk("Device %s is not ready\n", dht11->name);
 		return 0;
 	}
+	k_sleep(K_MSEC(2000));
 	// DO A FETCH OF THE DHT11 SENSOR DEVICE
 	ret = sensor_sample_fetch(dht11);
 	if (ret != 0) {
@@ -263,6 +223,7 @@ int main(void)
 		printk("Device %s is not ready\n", dht22->name);
 		return 0;
 	}
+	k_sleep(K_MSEC(2000));
 	// DO A FETCH OF THE DHT22 SENSOR DEVICE
 	ret = sensor_sample_fetch(dht22);
 	if (ret != 0) {
@@ -289,6 +250,7 @@ int main(void)
 		printk("Device %s is not ready\n", ds18b20->name);
 		return 0;
 	}
+	k_sleep(K_MSEC(2000));
 	// DO A FETCH OF THE DS18B20 SENSOR DEVICE
 	ret = sensor_sample_fetch(ds18b20);
 	if (ret != 0) {
@@ -306,6 +268,8 @@ int main(void)
 	}
 
 
+	k_sleep(K_MSEC(1500));
+
     ///////////////////////////////////////////////////////////////////////////
 	// VERIFY IF THE SERVO DEVICE IS READY
 	ret = device_is_ready(servo.dev);
@@ -319,7 +283,7 @@ int main(void)
 		printk("Error %d: failed to set pulse width\n", ret);
 		return 0;
 	}
-	k_sleep(K_SECONDS(1));
+	k_sleep(K_SECONDS(3));
 	// SET THE SERVO PULSE PARAMETER ACCORDINGLY TO THE OVERLAY DEFINITION
 	ret = pwm_set_pulse_dt(&servo, 0);
 	if (ret != 0) {
