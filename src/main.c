@@ -42,7 +42,7 @@ int main(void)
 	pulse_width = (uint32_t)((max_pulse + min_pulse) / 2);
 	printk("Pulse Width: %d\n", pulse_width);
 
-    ///////////////////////////////////////////////////////////////////////////
+    	///////////////////////////////////////////////////////////////////////////
 	// VERIFY IF THE GPIO ATTACHED TO THE OE OF THE LEVEL SHIFTER IS READY
 	ret = gpio_is_ready_dt(&level_shifter1);
 	if (ret == 0) {
@@ -65,7 +65,7 @@ int main(void)
 	}
 
 
-    ///////////////////////////////////////////////////////////////////////////
+    	///////////////////////////////////////////////////////////////////////////
 	// VERIFY IF THE GPIO ATTACHED TO THE RELAY IS READY
 	ret = gpio_is_ready_dt(&relay1);
 	if (ret == 0) {
@@ -94,7 +94,7 @@ int main(void)
 		return 0;
 	}
 
-    // VERIFY IF THE GPIO ATTACHED TO THE RELAY IS READY
+    	// VERIFY IF THE GPIO ATTACHED TO THE RELAY IS READY
 	ret = gpio_is_ready_dt(&relay3);
 	if (ret == 0) {
 		printk("Error: relay3 is not ready\n");
@@ -187,8 +187,7 @@ int main(void)
 		return 0;
 	}
 
-
-    ///////////////////////////////////////////////////////////////////////////
+    	///////////////////////////////////////////////////////////////////////////
 	// VERIFY IF THE DHT11 SENSOR DEVICE IS READY
 	ret = device_is_ready(dht11);
 	if (ret == 0) {
@@ -270,7 +269,7 @@ int main(void)
 
 	k_sleep(K_MSEC(1500));
 
-    ///////////////////////////////////////////////////////////////////////////
+    	///////////////////////////////////////////////////////////////////////////
 	// VERIFY IF THE SERVO DEVICE IS READY
 	ret = device_is_ready(servo.dev);
 	if (ret == 0) {
